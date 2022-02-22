@@ -91,13 +91,33 @@ func main() {
     // log.Println("Bearer token: " + bearerToken) 
 
 
-    // users, err := getUserInformation("pablogz205", clientId, bearerToken)
-    users, err := getUserInformation("teej_dv", clientId, bearerToken)
-    // users, err := getUserInformation("theprimeagen", clientId, bearerToken)
-    // users, err := getUserInformation("quirkitized", clientId, bearerToken)
+    for _, streamer := range configuration.Streamers {
+        processStreamer(streamer, clientId, bearerToken)
+    }
+    // processStreamer("bashbunni", clientId, bearerToken)
+
+}
+
+
+func processStreamer(username string, clientId string, bearerToken string) {
+    log.Println("Processing streamer: " + username)
+    users, err := getUserInformation(username, clientId, bearerToken)
+
+    if err != nil {
+        log.Println(err)
+        os.Exit(1)
+    }
+
+    if users == nil || len(users.Users) == 0 {
+        log.Println("No users found for " + username)
+        log.Printf("users response: %v\n", users)
+        os.Exit(1)
+    }
+
+    log.Println("Got user information for " + username)
 
     for _, user := range users.Users {
-        // log.Printf("%s with id: %s\n", user.DisplayName, user.ID)
+        log.Println("Getting stream information for " + user.Login)
         streams, err := getStreamInformation(user.ID, clientId, bearerToken)
 
         if err != nil {
@@ -109,16 +129,18 @@ func main() {
         // log.Printf("%s\n", str)
         if len(streams.Data) > 0 {
             log.Printf("%s is live\n", user.DisplayName)
-            filename := fmt.Sprintf("%s_%s.mkv", time.Now().Format("20060102_030405PM"), streams.Data[0].Title)
+            filename := fmt.Sprintf("%s_%s.mkv", streams.Data[0].StartedAt.Format("20060102_130405"), streams.Data[0].Title)
             filename = strings.Replace(filename, " ", "_", -1)
+
+            log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
 
             startRecording(user.DisplayName, filename, "/tempdir")
         } else {
             log.Printf("%s is offline\n", user.DisplayName)
         }
     }
-}
 
+}
 
 func startRecording(username string, filename string, path string) {
     log.Println("Starting recording")

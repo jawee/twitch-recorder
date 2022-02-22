@@ -4,11 +4,14 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"strings"
 )
 
 type Configuration struct {
     ClientId string `json:"client-id"`
     ClientSecret string `json:"client-secret"`
+    StreamersString string `json:"streamers"`
+    Streamers []string
 }
 
 
@@ -26,10 +29,13 @@ func New() *Configuration {
     if err != nil {  
        return nil 
     }
-    log.Println(configuration)
+
     if configuration.ClientId == "" || configuration.ClientSecret == "" {
         log.Println("ClientId or ClientSecret is empty")
         return nil
     }
+
+    streamers := strings.Replace(configuration.StreamersString, " ", "", -1)
+    configuration.Streamers = strings.Split(streamers, ",")
     return &configuration
 }
