@@ -1,5 +1,7 @@
 ## twitch-recorder
 
+## Work in progress. Barely configurable at all, and not very smart.
+
 #### Usage
 Make a copy of config-example.json, named config.json and fill it with 
 client-id and client-secret from twitch. 
