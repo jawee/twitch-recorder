@@ -2,9 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/jawee/twitch-recorder/internal/configuration"
@@ -88,7 +91,8 @@ func main() {
     // log.Println("Bearer token: " + bearerToken) 
 
 
-    users, err := getUserInformation("pablogz205", clientId, bearerToken)
+    // users, err := getUserInformation("pablogz205", clientId, bearerToken)
+    users, err := getUserInformation("teej_dv", clientId, bearerToken)
     // users, err := getUserInformation("theprimeagen", clientId, bearerToken)
     // users, err := getUserInformation("quirkitized", clientId, bearerToken)
 
@@ -105,10 +109,33 @@ func main() {
         // log.Printf("%s\n", str)
         if len(streams.Data) > 0 {
             log.Printf("%s is live\n", user.DisplayName)
+            filename := fmt.Sprintf("%s_%s.mkv", time.Now().Format("20060102_030405PM"), streams.Data[0].Title)
+            filename = strings.Replace(filename, " ", "_", -1)
+
+            startRecording(user.DisplayName, filename, "/tempdir")
         } else {
             log.Printf("%s is offline\n", user.DisplayName)
         }
     }
+}
+
+
+func startRecording(username string, filename string, path string) {
+    log.Println("Starting recording")
+
+    if _, err := os.Stat(path + "/" + username); os.IsNotExist(err) {
+        os.Mkdir(path + "/" + username, 0777)
+    }
+    cmd := exec.Command("streamlink", "twitch.tv/" + username, "best", "-o", path + "/"+ username + "/" + filename)
+
+    log.Println("Running cmd")
+    cmd.Stdout = os.Stdout
+    err := cmd.Run()
+
+    if err != nil {
+        log.Println(err)
+    }
+
 }
 
 
