@@ -17,25 +17,3 @@ cd twitch-recorder
 docker build -t my-golang-app .
 docker run -it --rm -v /path/to/in-progress/directory:/tempdir -v /path/to/finished/videos/directory:/videos --name my-running-app my-golang-app
 ```
-
-
-
-
-
-
-
-
-
-
-
-##### Help
-
-##### Streamlink usage
-```bash
-streamlink --twitch-disable-ads twitch.tv/username 1080p -o filetest.ts
-```
-```bash
-streamlink --twitch-disable-ads twitch.tv/username best -o filetest.mp4/mkv/ts
-```
-
-How to detect which quality is best?
