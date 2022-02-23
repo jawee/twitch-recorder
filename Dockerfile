@@ -6,7 +6,7 @@ RUN echo "deb http://deb.debian.org/debian buster-backports main" | tee "/etc/ap
 
 RUN apt update
 RUN apt -t buster-backports install streamlink -y
-RUN apt install ffmpeg -y
+# RUN apt install ffmpeg -y
 
 COPY go.mod ./
 RUN go mod download && go mod verify
