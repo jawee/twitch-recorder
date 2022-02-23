@@ -1,14 +1,14 @@
-## twitch-recorder
+# twitch-recorder
 
-## Work in progress. Barely configurable at all, and not very smart.
+# Work in progress. Barely configurable at all, and not very smart.
 
 
-### TODO
+## TODO
 - [ ] Move finished files from inprogress to videos
 - [ ] Convert videos to h265 with ffmpeg
 - [ ] Notifications (probably discord, on start, success and failure)
 
-### Usage
+## Usage
 Make a copy of config-example.json, named config.json and fill it with 
 client-id, client-secret and streamers. 
 
@@ -21,11 +21,11 @@ client-id, client-secret and streamers.
 ```
 
 
-#### Docker
+### Docker
 Place config.json in your ./config directory.
 
 
-##### CLI
+#### CLI
 
 ```bash
 $ docker create -v /path/to/config/directory:/config \ 
@@ -35,7 +35,7 @@ $ docker create -v /path/to/config/directory:/config \
   --name twitch-recorder ghcr.io/jawee/twitch-recorder:latest
 ```
 
-##### Docker-compose
+#### Docker-compose
 
 ```yaml
 ---
@@ -52,10 +52,10 @@ services:
 ```
 
 
-#### Development
+### Development
 
 
-##### Docker run
+#### Docker run
 
 ```bash
 $ git clone git@github.com:jawee/twitch-recorder.git
@@ -67,7 +67,7 @@ $ docker run -it --rm -v /path/to/config/directory:/config \
 --name twitch-recorder twitch-recorder
 ```
 
-##### Go run
+#### Go run
 ```bash
 go run cmd/main.go 
 ```
