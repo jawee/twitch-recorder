@@ -19,7 +19,7 @@ jobs:
         password: ${{ secrets.CR_PAT }}
 
     - name: Extract Git Tag
-        run: echo "GIT_TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+      run: echo "GIT_TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
     - name: Build the twitch-recorder Docker image
       with:
         IMAGE_TAG: ${{ env.GIT_TAG }}
