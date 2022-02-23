@@ -22,7 +22,7 @@ jobs:
       run: echo "GIT_TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
     - name: Build the twitch-recorder Docker image
-      with:
+      env:
         IMAGE_TAG: ${{ env.GIT_TAG }}
       run: |
         docker build . --tag ghcr.io/jawee/twitch-recorder:latest --tag ghcr.io/jawee/twitch-recorder:$IMAGE_TAG
