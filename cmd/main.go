@@ -83,19 +83,21 @@ func main() {
     clientId := configuration.ClientId
     clientSecret := configuration.ClientSecret
 
-    bearerToken, err := getTwitchBearerToken(clientId, clientSecret)
-    if err != nil {
-        log.Println(err)
-        os.Exit(1)
+    for {
+        bearerToken, err := getTwitchBearerToken(clientId, clientSecret)
+        if err != nil {
+            log.Println(err)
+            os.Exit(1)
+        }
+        // log.Println("Bearer token: " + bearerToken) 
+
+
+        for _, streamer := range configuration.Streamers {
+            processStreamer(streamer, clientId, bearerToken)
+        }
+        // processStreamer("bashbunni", clientId, bearerToken)
+        time.Sleep(time.Minute)
     }
-    // log.Println("Bearer token: " + bearerToken) 
-
-
-    for _, streamer := range configuration.Streamers {
-        processStreamer(streamer, clientId, bearerToken)
-    }
-    // processStreamer("bashbunni", clientId, bearerToken)
-
 }
 
 
@@ -134,7 +136,8 @@ func processStreamer(username string, clientId string, bearerToken string) {
 
             log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
 
-            startRecording(user.DisplayName, filename, "/tempdir")
+            // TODO this needs to be sent to a thread/goroutine. How to handle callback when done? 
+            // startRecording(user.DisplayName, filename, "/tempdir")
         } else {
             log.Printf("%s is offline\n", user.DisplayName)
         }
