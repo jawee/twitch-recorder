@@ -5,11 +5,12 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 	"time"
 
 	"github.com/jawee/twitch-recorder/internal/configuration"
-    "github.com/jawee/twitch-recorder/internal/twitchclient"
+	"github.com/jawee/twitch-recorder/internal/twitchclient"
 )
 
 func main() {
@@ -80,18 +81,20 @@ func processStreamer(username string, twitchClient *twitch_client.TwitchClient) 
 
 func startRecording(username string, filename string, baseDirectory string) {
     log.Println("Starting recording")
-    filenamePath := baseDirectory + "/" + username + "/" + filename
+    // filenamePath := baseDirectory + "/" + username + "/" + filename
+    filePath := path.Join(baseDirectory, username, filename)
 
-    _, err := os.Stat(filenamePath)
+    _, err := os.Stat(filePath)
     if err == nil {
         log.Println("File already exists")
         return
     }
 
-    if _, err := os.Stat(baseDirectory + "/" + username); os.IsNotExist(err) {
-        os.Mkdir(baseDirectory + "/" + username, 0777)
+    userFolderPath := path.Join(baseDirectory, username)
+    if _, err := os.Stat(userFolderPath); os.IsNotExist(err) {
+        os.Mkdir(userFolderPath, 0777)
     }
-    cmd := exec.Command("streamlink", "twitch.tv/" + username, "best", "-o", filenamePath)
+    cmd := exec.Command("streamlink", "twitch.tv/" + username, "best", "-o", filePath)
 
     log.Println("Running cmd")
     cmd.Stdout = os.Stdout
