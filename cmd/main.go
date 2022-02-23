@@ -14,7 +14,8 @@ import (
 )
 
 func main() {
-    configuration := configuration.New()
+    configProvider := new(configuration.FileConfigurationProvider)
+    configuration := configuration.New(configProvider)
     if configuration == nil {
         log.Println("Configuration is nil")
         os.Exit(1)
