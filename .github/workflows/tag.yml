@@ -4,7 +4,6 @@ on:
   push:
     tags:
       - '*'
-
 jobs:
   publish-twitch-recorder-image:
     runs-on: ubuntu-latest
@@ -19,7 +18,12 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.CR_PAT }}
 
+    - name: Extract Git Tag
+        run: echo "GIT_TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
     - name: Build the twitch-recorder Docker image
+      with:
+        IMAGE_TAG: ${{ env.GIT_TAG }}
       run: |
-        docker build . --tag ghcr.io/jawee/twitch-recorder:latest
+        docker build . --tag ghcr.io/jawee/twitch-recorder:latest --tag ghcr.io/jawee/twitch-recorder:$IMAGE_TAG
         docker push ghcr.io/jawee/twitch-recorder:latest
+        docker push ghcr.io/jawee/twitch-recorder:$IMAGE_TAG
