@@ -25,6 +25,21 @@ docker run -it --rm -v /path/to/config/directory:/config \
 --name twitch-recorder twitch-recorder
 ```
 
+#### Docker-compose
+```yaml
+---
+version: "2.1"
+services:
+  librespeed:
+    image: ghcr.io/jawee/twitch-recorder:latest
+    container_name: twitch-recorder
+    volumes:
+      - ./config:/config
+      - ./inprogress:/inprogress
+      - ./videos:/videos
+    restart: unless-stopped
+```
+
 ##### Go run
 ```bash
 go run cmd/main.go 
