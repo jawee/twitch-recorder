@@ -17,8 +17,9 @@ type Configuration struct {
 
 func New() *Configuration {
     var configuration Configuration
-    pwd, _ := os.Getwd()
+    // pwd, _ := os.Getwd()
 
+    pwd := "/config"
     log.Println("Loading configuration from " + pwd + "/config.json")
     file, err := os.Open(pwd + "/config.json") 
     if err != nil { 

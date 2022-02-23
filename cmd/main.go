@@ -89,13 +89,10 @@ func main() {
             log.Println(err)
             os.Exit(1)
         }
-        // log.Println("Bearer token: " + bearerToken) 
-
 
         for _, streamer := range configuration.Streamers {
             processStreamer(streamer, clientId, bearerToken)
         }
-        // processStreamer("bashbunni", clientId, bearerToken)
         time.Sleep(time.Minute)
     }
 }
@@ -136,8 +133,9 @@ func processStreamer(username string, clientId string, bearerToken string) {
 
             log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
 
+            baseDirectory := "/inprogress"
             // TODO this needs to be sent to a thread/goroutine. How to handle callback when done? 
-            // startRecording(user.DisplayName, filename, "/tempdir")
+            go startRecording(user.DisplayName, filename, baseDirectory)
         } else {
             log.Printf("%s is offline\n", user.DisplayName)
         }
@@ -145,17 +143,24 @@ func processStreamer(username string, clientId string, bearerToken string) {
 
 }
 
-func startRecording(username string, filename string, path string) {
+func startRecording(username string, filename string, baseDirectory string) {
     log.Println("Starting recording")
+    filenamePath := baseDirectory + "/" + username + "/" + filename
 
-    if _, err := os.Stat(path + "/" + username); os.IsNotExist(err) {
-        os.Mkdir(path + "/" + username, 0777)
+    _, err := os.Stat(filenamePath)
+    if err == nil {
+        log.Println("File already exists")
+        return
     }
-    cmd := exec.Command("streamlink", "twitch.tv/" + username, "best", "-o", path + "/"+ username + "/" + filename)
+
+    if _, err := os.Stat(baseDirectory + "/" + username); os.IsNotExist(err) {
+        os.Mkdir(baseDirectory + "/" + username, 0777)
+    }
+    cmd := exec.Command("streamlink", "twitch.tv/" + username, "best", "-o", filenamePath)
 
     log.Println("Running cmd")
     cmd.Stdout = os.Stdout
-    err := cmd.Run()
+    err = cmd.Run()
 
     if err != nil {
         log.Println(err)
@@ -163,12 +168,6 @@ func startRecording(username string, filename string, path string) {
 
 }
 
-
-// POST https://id.twitch.tv/oauth2/token
-//     ?client_id=<your client ID>
-//     &client_secret=<your client secret>
-//     &grant_type=client_credentials
-//     &scope=<space-separated list of scopes>
 func getTwitchBearerToken(clientId string, clientSecret string) (string, error) {
 
     url := "https://id.twitch.tv/oauth2/token?client_id=" + clientId + "&client_secret=" + clientSecret + "&grant_type=client_credentials&scope=channel:read:subscriptions"
@@ -189,10 +188,6 @@ func getTwitchBearerToken(clientId string, clientSecret string) (string, error) 
 
     return tokenResponse.AccessToken, nil 
 }
-
-// curl -X GET 'https://api.twitch.tv/helix/users?id=141981764' \
-// -H 'Authorization: Bearer cfabdegwdoklmawdzdo98xt2fo512y' \
-// -H 'Client-Id: uo6dggojyb8d6soh92zknwmi5ej1q2'
 
 func getUserInformation(userName string, clientId string, bearerToken string) (*SearchUsers, error) {
     url := "https://api.twitch.tv/helix/users?login=" + userName
@@ -215,9 +210,7 @@ func getUserInformation(userName string, clientId string, bearerToken string) (*
 
     return &users, nil
 }
-// curl -X GET 'https://api.twitch.tv/helix/search/channels?query=loserfruit' \
-// -H 'Authorization: Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx' \
-// -H 'Client-Id: wbmytr93xzw8zbg0p1izqyzzc5mbiz'
+
 func getChannelInformation(broadcasterId string, clientId string, bearerToken string) (*SearchChannel, error) {
     url := "https://api.twitch.tv/helix/search/channels?query=" + broadcasterId;
     req, err := http.NewRequest("GET", url, nil)
@@ -239,11 +232,6 @@ func getChannelInformation(broadcasterId string, clientId string, bearerToken st
 
     return &channels, nil
 }
-
-// curl -X GET
-// 'https://api.twitch.tv/helix/streams?user_id=12313123 \
-// -H 'Authorization: Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx' \
-// -H 'Client-Id: uo6dggojyb8d6soh92zknwmi5ej1q2'
 
 func getStreamInformation(userId string, clientId string, bearerToken string) (*SearchStream, error) {
     url := "https://api.twitch.tv/helix/streams?user_id=" + userId

@@ -14,7 +14,8 @@ RUN go mod download && go mod verify
 COPY . .
 RUN go build -v -o /usr/local/bin/app ./cmd/...
 
-RUN mkdir /tempdir
+RUN mkdir /inprogress
 RUN mkdir /videos
+RUN mkdir /config
 
 CMD ["app"]
