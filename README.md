@@ -16,6 +16,6 @@ go run cmd/main.go
 ```bash
 git clone git@github.com:jawee/twitch-recorder.git
 cd twitch-recorder
-docker build -t my-golang-app .
-docker run -it --rm -v /path/to/in-progress/directory:/tempdir -v /path/to/finished/videos/directory:/videos --name my-running-app my-golang-app
+docker build -t twitch-recorder .
+docker run -it --rm -v /path/to/in-progress/directory:/tempdir -v /path/to/finished/videos/directory:/videos --name twitch-recorder twitch-recorder
 ```
