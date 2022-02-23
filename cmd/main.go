@@ -64,7 +64,7 @@ func processStreamer(username string, twitchClient *twitch_client.TwitchClient) 
         // log.Printf("%s\n", str)
         if len(streams.Data) > 0 {
             log.Printf("%s is live\n", user.DisplayName)
-            filename := fmt.Sprintf("%s_%s.mkv", streams.Data[0].StartedAt.Format("20060102_130405"), streams.Data[0].Title)
+            filename := fmt.Sprintf("%s_%s.mp4", streams.Data[0].StartedAt.Format("20060102_130405"), streams.Data[0].Title)
             filename = strings.Replace(filename, " ", "_", -1)
 
             log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
