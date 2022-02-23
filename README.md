@@ -41,7 +41,7 @@ $ docker create -v /path/to/config/directory:/config \
 ---
 version: "2.1"
 services:
-  librespeed:
+  twitch-recorder:
     image: ghcr.io/jawee/twitch-recorder:latest
     container_name: twitch-recorder
     volumes:
