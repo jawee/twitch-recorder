@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"path"
 	"strings"
 	"time"
 
 	"github.com/jawee/twitch-recorder/internal/configuration"
+	"github.com/jawee/twitch-recorder/internal/recorder"
 	"github.com/jawee/twitch-recorder/internal/twitchclient"
 )
 
@@ -71,8 +70,11 @@ func processStreamer(username string, twitchClient *twitch_client.TwitchClient) 
             log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
 
             baseDirectory := "/inprogress"
+            recorder := recorder.New(baseDirectory)
             // TODO this needs to be sent to a thread/goroutine. How to handle callback when done? 
-            go startRecording(user.DisplayName, filename, baseDirectory)
+            go func() {
+                recorder.Record(user.DisplayName, filename)
+            }()
         } else {
             log.Printf("%s is offline\n", user.DisplayName)
         }
@@ -80,30 +82,4 @@ func processStreamer(username string, twitchClient *twitch_client.TwitchClient) 
 
 }
 
-func startRecording(username string, filename string, baseDirectory string) {
-    log.Println("Starting recording")
-    // filenamePath := baseDirectory + "/" + username + "/" + filename
-    filePath := path.Join(baseDirectory, username, filename)
-
-    _, err := os.Stat(filePath)
-    if err == nil {
-        log.Println("File already exists")
-        return
-    }
-
-    userFolderPath := path.Join(baseDirectory, username)
-    if _, err := os.Stat(userFolderPath); os.IsNotExist(err) {
-        os.Mkdir(userFolderPath, 0777)
-    }
-    cmd := exec.Command("streamlink", "twitch.tv/" + username, "best", "-o", filePath)
-
-    log.Println("Running cmd")
-    cmd.Stdout = os.Stdout
-    err = cmd.Run()
-
-    if err != nil {
-        log.Println(err)
-    }
-
-}
 
