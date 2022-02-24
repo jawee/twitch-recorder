@@ -34,7 +34,7 @@ func main() {
 }
 
 
-func processStreamer(username string, twitchClient *twitch_client.TwitchClient) {
+func processStreamer(username string, twitchClient twitch_client.InformationClient) {
     log.Println("Processing streamer: " + username)
 
     users, err := twitchClient.GetUserInformation(username)
@@ -70,10 +70,16 @@ func processStreamer(username string, twitchClient *twitch_client.TwitchClient) 
             log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
 
             baseDirectory := "/inprogress"
-            recorder := recorder.New(baseDirectory)
+            rec := recorder.New(baseDirectory)
             // TODO this needs to be sent to a thread/goroutine. How to handle callback when done? 
+            // c := make(chan *recorder.RecordedFile)
             go func() {
-                recorder.Record(user.DisplayName, filename)
+                // res, err := rec.Record(user.DisplayName, filename)
+                _, err := rec.Record(user.DisplayName, filename)
+                if err != nil {
+                    log.Println(err)
+                }
+                // c <- res
             }()
         } else {
             log.Printf("%s is offline\n", user.DisplayName)

@@ -68,6 +68,12 @@ type TokenResponse struct {
 	Scope        []string `json:"scope"`
 }
 
+type InformationClient interface {
+    GetChannelInformation(broadcasterId string) (*SearchChannel, error) 
+    GetStreamInformation(userId string) (*SearchStream, error)
+    GetUserInformation(userName string) (*SearchUsers, error)
+}
+
 type TwitchClient struct {
     clientSecret string
     clientId string
@@ -131,7 +137,7 @@ func (c *TwitchClient) GetStreamInformation(userId string) (*SearchStream, error
     return &streams, nil
 }
 
-func (c *TwitchClient)GetUserInformation(userName string) (*SearchUsers, error) {
+func (c *TwitchClient) GetUserInformation(userName string) (*SearchUsers, error) {
     bearerToken, err := getTwitchBearerToken(c.clientId, c.clientSecret)
     c.bearerToken = bearerToken
 
