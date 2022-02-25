@@ -13,7 +13,7 @@ type RecordedFile struct {
 }
 
 type Recorder interface {
-    Record(username string, filename string) (RecordedFile, error)
+    Record(username string, filename string) (*RecordedFile, error)
 }
 
 type StreamlinkRecorder struct {
