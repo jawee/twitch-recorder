@@ -78,6 +78,7 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
             }()
         } else {
             log.Printf("%s is offline\n", user.DisplayName)
+            return errors.New(user.DisplayName + " is offline")
         }
     }
     return nil

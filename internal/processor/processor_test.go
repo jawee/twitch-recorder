@@ -36,7 +36,7 @@ func (mtc *MockTwitchClient) GetStreamInformation(userId string) (*twitch_client
     str := "2017-01-01T00:00:00Z"
     layout := "2006-01-02T15:04:05.000Z"
     t, _ := time.Parse(layout, str)
-    
+
     res := &twitch_client.SearchStream{
         Data: []twitch_client.Stream{
             {
@@ -57,6 +57,11 @@ func (mtc *MockTwitchClient) GetStreamInformation(userId string) (*twitch_client
             },
         },
     }
+    // I hate this
+    if userId == "12346" {
+        res.Data = []twitch_client.Stream{}
+    }
+    
     return res, nil
 }
 
@@ -65,6 +70,27 @@ func (mtc *MockTwitchClient) GetUserInformation(userName string) (*twitch_client
     str := "2017-01-01T00:00:00Z"
     layout := "2006-01-02T15:04:05.000Z"
     t, _ := time.Parse(layout, str)
+
+    // I hate this
+    if userName == "offlinestreamer" {
+        return &twitch_client.SearchUsers{
+            Users: []twitch_client.User{
+                {
+                    ID: "12346",
+                    Login: "offlinestreamer",
+                    DisplayName: "Some Name",
+                    Type: "staff",
+                    BroadcasterType: "Some bio",
+                    Description: "2017-01-01T00:00:00Z",
+                    ProfileImageUrl: "https://static-cdn.jtvnw.net/jtv_user_pictures/somename-profile_image-1a1af1c2f8e7f9d4-300x300.png",
+                    OfflineImageUrl: "https://static-cdn.jtvnw.net/jtv_user_pictures/somename-profile_banner-1a1af1c2f8e7f9d4-480.png",
+                    ViewCount: "10000",
+                    Email: "something@something.something",
+                    CreatedAt: t,
+                },
+            },
+        }, nil
+    }
 
     return &twitch_client.SearchUsers{
         Users: []twitch_client.User{
@@ -115,21 +141,16 @@ func TestProcessStreamerOnline(t *testing.T) {
     }
 }
 
-// func TestProcessStreamerOffline(t *testing.T) {
-//
-//     c := make(chan *recorder.RecordedFile)
-//     mockTwitchClient := new(MockTwitchClient)
-//     mockRecorder := new(MockRecorder)
-//     processor := New(c, mockTwitchClient, mockRecorder)
-//     err := processor.ProcessStreamer("somename")
-//
-//     if err != nil {
-//         t.Errorf("ProcessStreamer returned an error: %s", err)
-//     }
-//
-//     for msg := range c {
-//         if msg != nil {
-//             t.Errorf("ProcessStreamer returned a result: %s", msg)
-//         }
-//     }
-// }
+func TestProcessStreamerOffline(t *testing.T) {
+
+    c := make(chan *recorder.RecordedFile)
+    mockTwitchClient := new(MockTwitchClient)
+    mockRecorder := new(mockRecorder)
+    processor := New(c, mockTwitchClient, mockRecorder)
+    err := processor.ProcessStreamer("offlinestreamer")
+
+    if err == nil {
+        t.Errorf("ProcessStreamer did not retur an error")
+    }
+
+}
