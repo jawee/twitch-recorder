@@ -5,7 +5,7 @@ on:
     tags:
       - '*'
 jobs:
-  publish-twitch-recorder-image:
+  build-and-publish-image:
     runs-on: ubuntu-latest
 
     steps:
