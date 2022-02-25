@@ -16,12 +16,12 @@ type Processor interface {
 
 
 type StreamProcessor struct {
-    c *chan *recorder.RecordedFile
+    c chan *recorder.RecordedFile
     client twitch_client.InformationClient
     rec recorder.Recorder
 }
 
-func New(c *chan *recorder.RecordedFile, client twitch_client.InformationClient, rec recorder.Recorder) *StreamProcessor {
+func New(c chan *recorder.RecordedFile, client twitch_client.InformationClient, rec recorder.Recorder) *StreamProcessor {
     return &StreamProcessor{
         c: c,
         client: client,
@@ -73,7 +73,8 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
                 if err != nil {
                     log.Println(err)
                 }
-                *sp.c <- res
+                sp.c <- res
+                close(sp.c)
             }()
         } else {
             log.Printf("%s is offline\n", user.DisplayName)
