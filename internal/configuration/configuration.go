@@ -47,16 +47,13 @@ func (f *FileConfigurationProvider)GetConfigurationJson() ([]byte, error) {
 
 func New(configProvider ConfigurationProvider) *Configuration {
     log.Println("New. Loading configuration")    
-    // pwd, _ := os.Getwd()
+
     bytes, err := configProvider.GetConfigurationJson()
 
     if err != nil {
         log.Printf("Error getting configuration from provider: %s", err)
         return nil
     }
-
-    log.Println("Printing bytes")
-    log.Println(string(bytes))
 
     var configuration *Configuration
     err = json.Unmarshal(bytes, &configuration) 

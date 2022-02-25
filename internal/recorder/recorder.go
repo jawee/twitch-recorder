@@ -28,7 +28,7 @@ func New(baseDirectory string) *StreamlinkRecorder {
 
 func (s* StreamlinkRecorder) Record(username string, filename string) (*RecordedFile, error) {
     log.Println("Starting recording")
-    // filenamePath := baseDirectory + "/" + username + "/" + filename
+
     filePath := path.Join(s.baseDirectory, username, filename)
 
     _, err := os.Stat(filePath)

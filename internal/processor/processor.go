@@ -55,8 +55,6 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
             return err
         }
 
-        // str, err := json.Marshal(streams)
-        // log.Printf("%s\n", str)
         if len(streams.Data) > 0 {
             log.Printf("%s is live\n", user.DisplayName)
             filename := fmt.Sprintf("%s_%s.mp4", streams.Data[0].StartedAt.Format("20060102_130405"), streams.Data[0].Title)
@@ -64,16 +62,14 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
 
             log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
 
-            // baseDirectory := "/inprogress"
-            // TODO this needs to be sent to a thread/goroutine. How to handle callback when done? 
-            // c := make(chan *recorder.RecordedFile)
             go func() {
-                // res, err := rec.Record(user.DisplayName, filename)
                 res, err := sp.rec.Record(user.DisplayName, filename)
                 if err != nil {
                     log.Println(err)
                 }
                 sp.c <- res
+                // Do I want a channel for each download, or just one?
+                //close(sp.c)
             }()
         } else {
             log.Printf("%s is offline\n", user.DisplayName)
