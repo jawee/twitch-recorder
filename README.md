@@ -1,5 +1,5 @@
 # twitch-recorder
-
+![example workflow](https://github.com/jawee/twitch-recorder/actions/workflows/build-and-test.yml/badge.svg)
 # Work in progress. Barely configurable at all, and not very smart.
 
 
