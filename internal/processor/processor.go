@@ -74,7 +74,6 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
                     log.Println(err)
                 }
                 sp.c <- res
-                close(sp.c)
             }()
         } else {
             log.Printf("%s is offline\n", user.DisplayName)

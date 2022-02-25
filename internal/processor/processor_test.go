@@ -141,6 +141,35 @@ func TestProcessStreamerOnline(t *testing.T) {
     }
 }
 
+func TestProcessTwoOnlineStreamers(t *testing.T) {
+    c := make(chan *recorder.RecordedFile)
+    mockTwitchClient := new(MockTwitchClient)
+    mockRecorder := new(mockRecorder)
+    processor := New(c, mockTwitchClient, mockRecorder)
+    err := processor.ProcessStreamer("somename")
+
+    if err != nil {
+        t.Errorf("ProcessStreamer returned an error: %s", err)
+    }
+
+    err = processor.ProcessStreamer("somename2")
+
+    if err != nil {
+        t.Errorf("ProcessStreamer returned an error: %s", err)
+    }
+
+    res := <-c
+    if res == nil {
+        t.Errorf("ProcessStreamer did not return a result")
+    }
+
+    res = <-c
+    if res == nil {
+        t.Errorf("ProcessStreamer did not return a second result")
+    }
+
+}
+
 func TestProcessStreamerOffline(t *testing.T) {
 
     c := make(chan *recorder.RecordedFile)
