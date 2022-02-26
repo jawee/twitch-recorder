@@ -2,6 +2,7 @@ package twitch_client
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -37,7 +38,7 @@ type User struct {
     Description        string    `json:"description"`
     ProfileImageUrl    string    `json:"profile_image_url"`
     OfflineImageUrl    string    `json:"offline_image_url"`
-    ViewCount          string    `json:"view_count"`
+    ViewCount          json.Number    `json:"view_count"`
     Email              string    `json:"email"`
     CreatedAt          time.Time `json:"created_at"`
 }
@@ -88,83 +89,44 @@ func New(clientId string, clientSecret string) *TwitchClient {
 }
 
 func (c *TwitchClient) GetChannelInformation(broadcasterId string) (*SearchChannel, error) {
-    bearerToken, err := getTwitchBearerToken(c.clientId, c.clientSecret)
-    c.bearerToken = bearerToken
-
     url := "https://api.twitch.tv/helix/search/channels?query=" + broadcasterId;
-    req, err := http.NewRequest("GET", url, nil)
-    req.Header.Set("Authorization", "Bearer " + c.bearerToken)
-    req.Header.Set("Client-Id", c.clientId)
-    req.Header.Set("Content-Type", "application/json")
 
-    client := &http.Client{}
-    resp, err := client.Do(req)
+    var searchChannel SearchChannel
+    err := c.makeAuthorizedRequest(url, &searchChannel)
+
     if err != nil {
-        log.Println(err)
         return nil, err
     }
-    defer resp.Body.Close()
 
-    decoder := json.NewDecoder(resp.Body)
-    var channels SearchChannel
-    err = decoder.Decode(&channels)
-
-    return &channels, nil
+    return &searchChannel, nil
 }
 
 func (c *TwitchClient) GetStreamInformation(userId string) (*SearchStream, error) {
-    bearerToken, err := getTwitchBearerToken(c.clientId, c.clientSecret)
-    c.bearerToken = bearerToken
-
     url := "https://api.twitch.tv/helix/streams?user_id=" + userId
-    req, err := http.NewRequest("GET", url, nil)
-    req.Header.Set("Authorization", "Bearer " + c.bearerToken)
-    req.Header.Set("Client-Id", c.clientId)
-    req.Header.Set("Content-Type", "application/json")
 
-    client := &http.Client{}
-    resp, err := client.Do(req)
+    var searchStream SearchStream
+    err := c.makeAuthorizedRequest(url, &searchStream)
     if err != nil {
-        log.Println(err)
         return nil, err
     }
-    defer resp.Body.Close()
-
-    decoder := json.NewDecoder(resp.Body)
-    var streams SearchStream
-    err = decoder.Decode(&streams)
-
-    return &streams, nil
+    return &searchStream, nil
 }
 
 func (c *TwitchClient) GetUserInformation(userName string) (*SearchUsers, error) {
-    bearerToken, err := getTwitchBearerToken(c.clientId, c.clientSecret)
-    c.bearerToken = bearerToken
-
     url := "https://api.twitch.tv/helix/users?login=" + userName
 
-    req, err := http.NewRequest("GET", url, nil)
-    req.Header.Set("Authorization", "Bearer " + c.bearerToken)
-    req.Header.Set("Client-Id", c.clientId)
-    req.Header.Set("Content-Type", "application/json")
+    var searchUsers SearchUsers
 
-    client := &http.Client{}
-    resp, err := client.Do(req)
+    err := c.makeAuthorizedRequest(url, &searchUsers)
     if err != nil {
-        log.Println(err)
         return nil, err
     }
-    defer resp.Body.Close()
-    decoder := json.NewDecoder(resp.Body)
-    var users SearchUsers
-    err = decoder.Decode(&users)
 
-    return &users, nil
+    return &searchUsers, nil
 }
 
-func getTwitchBearerToken(clientId string, clientSecret string) (string, error) {
-
-    url := "https://id.twitch.tv/oauth2/token?client_id=" + clientId + "&client_secret=" + clientSecret + "&grant_type=client_credentials&scope=channel:read:subscriptions"
+func (c *TwitchClient) getTwitchBearerToken() error {
+    url := "https://id.twitch.tv/oauth2/token?client_id=" + c.clientId + "&client_secret=" + c.clientSecret + "&grant_type=client_credentials&scope=channel:read:subscriptions"
 
     req, err := http.NewRequest("POST", url, nil)
     req.Header.Set("Content-Type", "application/json")
@@ -173,12 +135,57 @@ func getTwitchBearerToken(clientId string, clientSecret string) (string, error) 
     resp, err := client.Do(req)
     if err != nil {
         log.Println(err)
-        return "", err
+        return err
     }
     defer resp.Body.Close()
     decoder := json.NewDecoder(resp.Body)
     var tokenResponse TokenResponse
     err = decoder.Decode(&tokenResponse)
 
-    return tokenResponse.AccessToken, nil 
+    if(err != nil) {
+        log.Println(err)
+        return err
+    }
+
+    c.bearerToken = tokenResponse.AccessToken
+
+    return nil 
 }
+
+func (c *TwitchClient) makeAuthorizedRequest(url string, result interface{}) error {
+
+    err := c.getTwitchBearerToken()
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+
+    req, err := http.NewRequest("GET", url, nil)
+    req.Header.Set("Client-Id", c.clientId)
+    req.Header.Set("Content-Type", "application/json")
+    req.Header.Set("Authorization", "Bearer "+c.bearerToken)
+
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+
+    defer resp.Body.Close()
+
+    if(resp.Status == "401 Unauthorized") {
+        log.Println("401 Unauthorized")
+        return errors.New(resp.Status)
+    }
+
+    decoder := json.NewDecoder(resp.Body)
+    err = decoder.Decode(result)
+    if err != nil {
+        log.Println(err)
+        return err
+    }
+
+    return nil
+}
+
