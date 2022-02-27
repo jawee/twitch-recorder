@@ -25,9 +25,9 @@ type FileConfigurationProvider struct {
 }
 
 func (f *FileConfigurationProvider)GetConfigurationJson() ([]byte, error) {
-    pwd := "/config"
-    log.Println("FileConfigurationProvider.GetConfigurationJson. Loading configuration from " + pwd + "/config.json")
-    path := path.Join(pwd, "config.json")
+    configDir := "/config"
+    log.Println("FileConfigurationProvider.GetConfigurationJson. Loading configuration from " + configDir + "/config.json")
+    path := path.Join(configDir, "config.json")
     file, err := os.Open(path)
 
     if err != nil {

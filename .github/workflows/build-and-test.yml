@@ -25,9 +25,25 @@ jobs:
 #           go get -u golang.org/x/lint/golint
 #           make lint
 
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: go build cmd/main.go 
+
   test:
     name: Test
     runs-on: ubuntu-latest
+    needs: [build]
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -46,24 +62,10 @@ jobs:
       #     token: ${{secrets.CODECOV_TOKEN}}
       #     file: ./coverage.txt
 
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [test]
-    steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17
-
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Build
-        run: go build cmd/main.go 
-
   sonarcloud:
+    name: Analyze
     runs-on: ubuntu-latest
+    needs: [build, test]
     steps:
     - uses: actions/checkout@v2
       with:
