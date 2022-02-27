@@ -111,6 +111,13 @@ func (mtc *MockTwitchClient) GetUserInformation(userName string) (*twitch_client
     }, nil
 }   
 
+type mockNotificationClient struct {
+}
+
+func (mnc *mockNotificationClient) SendMessage( message string) error {
+    return nil
+}
+
 type mockRecorder struct {
 }
 
@@ -124,7 +131,6 @@ func (mr *mockRecorder) Record(username string, filename string) (*recorder.Reco
 
 
 func TestProcessStreamerOnline(t *testing.T) {
-
     c := make(chan *recorder.RecordedFile)
     mockTwitchClient := new(MockTwitchClient)
     mockRecorder := new(mockRecorder)

@@ -6,17 +6,21 @@
 ## TODO
 - [ ] Move finished files from inprogress to videos
 - [ ] Convert videos to h265 with ffmpeg
-- [ ] Notifications (probably discord, on start, success and failure)
+- [ ] Notifications (probably discord, success and failure)
 
 ## Usage
 Make a copy of config-example.json, named config.json and fill it with 
 client-id, client-secret and streamers. 
 
+If you want to get a discord notification on start recording, add webhook-id and webhook-token
+
 ```json
 {
     "client-id": "asdfkölk93242340fdsf",
     "client-secret": "jkklajhdfhj88912313",
-    "streamers": "streamer1, streamer2"
+    "streamers": "streamer1, streamer2",
+    "webhook-id": "asdfasdfaf",
+    "webhook-token": "kjasdkjlfkasdjfkaljkf"
 }
 ```
 
