@@ -61,7 +61,6 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
             filename = strings.Replace(filename, " ", "_", -1)
 
             log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
-
             go func() {
                 res, err := sp.rec.Record(user.DisplayName, filename)
                 if err != nil {

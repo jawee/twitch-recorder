@@ -13,6 +13,8 @@ type Configuration struct {
     ClientSecret string `json:"client-secret"`
     StreamersString string `json:"streamers"`
     Streamers []string
+    WebhookId string `json:"webhook-id"`
+    WebhookToken string `json:"webhook-token"`
 }
 
 type ConfigurationProvider interface {
@@ -45,29 +47,29 @@ func (f *FileConfigurationProvider)GetConfigurationJson() ([]byte, error) {
 }
 
 
-func New(configProvider ConfigurationProvider) *Configuration {
+func New(configProvider ConfigurationProvider) (*Configuration, error) {
     log.Println("New. Loading configuration")    
 
     bytes, err := configProvider.GetConfigurationJson()
 
     if err != nil {
         log.Printf("Error getting configuration from provider: %s", err)
-        return nil
+        return nil, err
     }
 
     var configuration *Configuration
     err = json.Unmarshal(bytes, &configuration) 
     if err != nil {  
         log.Printf("Error unmarshalling configuration: %s", err)
-        return nil 
+        return nil, err
     }
 
     if configuration.ClientId == "" || configuration.ClientSecret == "" {
         log.Println("ClientId or ClientSecret is empty")
-        return nil
+        return nil, err
     }
 
     streamers := strings.Replace(configuration.StreamersString, " ", "", -1)
     configuration.Streamers = strings.Split(streamers, ",")
-    return configuration
+    return configuration, nil
 }

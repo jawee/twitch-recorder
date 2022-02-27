@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/exec"
 	"path"
+
+	"github.com/jawee/twitch-recorder/internal/discordclient"
 )
 
 type RecordedFile struct {
@@ -18,11 +20,13 @@ type Recorder interface {
 
 type StreamlinkRecorder struct {
     baseDirectory string
+    notificationClient discordclient.NotificationClient
 }
 
-func New(baseDirectory string) *StreamlinkRecorder {
+func New(baseDirectory string, notificationClient discordclient.NotificationClient) *StreamlinkRecorder {
     return &StreamlinkRecorder{
         baseDirectory: baseDirectory,
+        notificationClient: notificationClient,
     }
 }
 
@@ -36,6 +40,8 @@ func (s* StreamlinkRecorder) Record(username string, filename string) (*Recorded
         log.Println("File already exists")
         return nil, err
     }
+
+    s.notificationClient.SendMessage("Starting recording for " + username + ". File " + filename)
 
     userFolderPath := path.Join(s.baseDirectory, username)
     if _, err := os.Stat(userFolderPath); os.IsNotExist(err) {
