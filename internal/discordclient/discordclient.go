@@ -3,7 +3,6 @@ package discordclient
 import (
 	"bytes"
 	"encoding/json"
-	"io"
 	"log"
 	"net/http"
 )
@@ -22,12 +21,14 @@ type DiscordClient struct {
 }
 
 func New(webhookId string, webhookToken string) *DiscordClient {
-    log.Printf("Creating new discord client with webhook id %s and webhook token %s", webhookId, webhookToken)  
+    if webhookId == "" || webhookToken == "" {
+        return nil
+    }
     return &DiscordClient{webhookId, webhookToken}
 }
 
 func (d *DiscordClient) SendMessage(message string) error {
-    log.Println("Sending message to discord")
+    log.Println("Sending message to discord. Message: " + message)
     webhookRequest := webhookRequest{Content: message}
     json, err := json.Marshal(webhookRequest)
     if err != nil {
@@ -39,14 +40,6 @@ func (d *DiscordClient) SendMessage(message string) error {
         return err
     }
     defer resp.Body.Close() 
-
-    log.Println(resp.Status)
-
-    b, err := io.ReadAll(resp.Body)
-    if err != nil {
-        return err
-    }
-    log.Println(string(b))
 
     return nil
 }
