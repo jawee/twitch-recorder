@@ -7,6 +7,7 @@ import (
 
 	"github.com/jawee/twitch-recorder/internal/configuration"
 	"github.com/jawee/twitch-recorder/internal/discordclient"
+	"github.com/jawee/twitch-recorder/internal/postprocessor"
 	"github.com/jawee/twitch-recorder/internal/processor"
 	"github.com/jawee/twitch-recorder/internal/recorder"
 	"github.com/jawee/twitch-recorder/internal/twitchclient"
@@ -34,6 +35,11 @@ func main() {
     disc := discordclient.New(discordId, discordToken)
     rec := recorder.New(baseDirectory, disc)
     c := make(chan *recorder.RecordedFile)
+
+    postproc := postprocessor.New(disc)
+
+    go startPostProcessing(postproc, c)
+
     proc := processor.New(c, twitchClient, rec)
 
     for {
@@ -42,5 +48,11 @@ func main() {
             proc.ProcessStreamer(streamer)
         }
         time.Sleep(time.Minute)
+    }
+}
+
+func startPostProcessing(postproc postprocessor.PostProcessor, c chan *recorder.RecordedFile) {
+    for v := range c {
+        go postproc.Process(v)
     }
 }

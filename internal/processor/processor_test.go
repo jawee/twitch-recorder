@@ -124,8 +124,9 @@ type mockRecorder struct {
 func (mr *mockRecorder) Record(username string, filename string) (*recorder.RecordedFile, error) {
     time.Sleep(time.Second * 1)
     return &recorder.RecordedFile{
-        Name: filename + ".mp4",
-        Path: "/some/path",
+        Username: username,
+        FileName: filename + ".mp4",
+        Path: "/some/path/" + filename + ".mp4",
     }, nil
 }
 
