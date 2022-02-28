@@ -65,8 +65,9 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
                 res, err := sp.rec.Record(user.DisplayName, filename)
                 if err != nil {
                     log.Println(err)
+                } else {
+                    sp.c <- res
                 }
-                sp.c <- res
                 // Do I want a channel for each download, or just one?
                 //close(sp.c)
             }()
