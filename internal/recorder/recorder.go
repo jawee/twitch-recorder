@@ -1,6 +1,7 @@
 package recorder
 
 import (
+	"errors"
 	"log"
 	"os"
 	"os/exec"
@@ -38,8 +39,7 @@ func (s* StreamlinkRecorder) Record(username string, filename string) (*Recorded
 
     _, err := os.Stat(filePath)
     if err == nil {
-        log.Println("File already exists")
-        return nil, err
+        return nil, errors.New("File already exists")
     }
 
     s.notificationClient.SendMessage("Starting recording for " + username + ". File " + filename)
