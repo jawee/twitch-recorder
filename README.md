@@ -8,6 +8,7 @@
 - [ ] Move finished files from inprogress to videos
 - [ ] Convert videos to h265 with ffmpeg
 - [ ] Notifications (probably discord, success and failure)
+- [ ] Twitch client handle unauthorized to not renew token every time
 
 ## Usage
 Make a copy of config-example.json, named config.json and fill it with 

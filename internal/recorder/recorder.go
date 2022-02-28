@@ -10,7 +10,8 @@ import (
 )
 
 type RecordedFile struct {
-    Name string
+    Username string
+    FileName string
     Path string
 }
 
@@ -60,7 +61,8 @@ func (s* StreamlinkRecorder) Record(username string, filename string) (*Recorded
 
 
     return &RecordedFile{
-        Name: filename,
+        Username: username,
+        FileName: filename,
         Path: filePath,
     }, nil  
 }
