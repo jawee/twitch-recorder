@@ -17,5 +17,6 @@ RUN go build -v -o /usr/local/bin/app ./cmd/...
 RUN mkdir /inprogress
 RUN mkdir /videos
 RUN mkdir /config
+RUN mkdir /logs
 
 CMD ["app"]
