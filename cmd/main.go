@@ -5,6 +5,8 @@ import (
 	"os"
 	"time"
 
+    "gopkg.in/natefinch/lumberjack.v2"
+
 	"github.com/jawee/twitch-recorder/internal/configuration"
 	"github.com/jawee/twitch-recorder/internal/discordclient"
 	"github.com/jawee/twitch-recorder/internal/postprocessor"
@@ -14,6 +16,12 @@ import (
 )
 
 func main() {
+    log.SetOutput(&lumberjack.Logger{
+        Filename:   "/logs/twitch-recorder.log",
+        MaxSize:    1, // megabytes
+        MaxBackups: 0,
+        MaxAge:     0, //days
+    })
     configProvider := new(configuration.FileConfigurationProvider)
     configuration, err := configuration.New(configProvider)
 

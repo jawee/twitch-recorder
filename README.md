@@ -37,6 +37,7 @@ Place config.json in your ./config directory.
 $ docker create -v /path/to/config/directory:/config \ 
   -v /path/to/in-progress/directory:/inprogress \
   -v /path/to/finished/videos/directory:/videos \
+  -v /path/to/logs:/logs \
   --restart unless-stopped \
   --name twitch-recorder ghcr.io/jawee/twitch-recorder:latest
 ```
@@ -54,6 +55,7 @@ services:
       - ./config:/config
       - ./inprogress:/inprogress
       - ./videos:/videos
+      - ./logs:/logs
     restart: unless-stopped
 ```
 
