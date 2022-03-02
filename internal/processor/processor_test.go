@@ -2,10 +2,12 @@ package processor
 
 import (
 	"encoding/json"
+	"log"
 	"testing"
 	"time"
 
 	"github.com/jawee/twitch-recorder/internal/recorder"
+	"github.com/jawee/twitch-recorder/internal/recordingtracker"
 	"github.com/jawee/twitch-recorder/internal/twitchclient"
 )
 
@@ -132,10 +134,12 @@ func (mr *mockRecorder) Record(username string, filename string) (*recorder.Reco
 
 
 func TestProcessStreamerOnline(t *testing.T) {
+    log.Println("Testing processStreamerOnline")
     c := make(chan *recorder.RecordedFile)
     mockTwitchClient := new(MockTwitchClient)
     mockRecorder := new(mockRecorder)
-    processor := New(c, mockTwitchClient, mockRecorder)
+    rt := recordingtracker.New()
+    processor := New(c, mockTwitchClient, mockRecorder, rt)
     err := processor.ProcessStreamer("somename")
 
     if err != nil {
@@ -149,10 +153,12 @@ func TestProcessStreamerOnline(t *testing.T) {
 }
 
 func TestProcessTwoOnlineStreamers(t *testing.T) {
+    log.Println("TestProcessTwoOnlineStreamers")
     c := make(chan *recorder.RecordedFile)
     mockTwitchClient := new(MockTwitchClient)
     mockRecorder := new(mockRecorder)
-    processor := New(c, mockTwitchClient, mockRecorder)
+    rt := recordingtracker.New()
+    processor := New(c, mockTwitchClient, mockRecorder, rt)
     err := processor.ProcessStreamer("somename")
 
     if err != nil {
@@ -178,11 +184,13 @@ func TestProcessTwoOnlineStreamers(t *testing.T) {
 }
 
 func TestProcessStreamerOffline(t *testing.T) {
+    log.Println("TestProcessStreamerOffline")
 
     c := make(chan *recorder.RecordedFile)
     mockTwitchClient := new(MockTwitchClient)
     mockRecorder := new(mockRecorder)
-    processor := New(c, mockTwitchClient, mockRecorder)
+    rt := recordingtracker.New()
+    processor := New(c, mockTwitchClient, mockRecorder, rt)
     err := processor.ProcessStreamer("offlinestreamer")
 
     if err == nil {

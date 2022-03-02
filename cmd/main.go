@@ -5,13 +5,14 @@ import (
 	"os"
 	"time"
 
-    "gopkg.in/natefinch/lumberjack.v2"
+	"gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/jawee/twitch-recorder/internal/configuration"
 	"github.com/jawee/twitch-recorder/internal/discordclient"
 	"github.com/jawee/twitch-recorder/internal/postprocessor"
 	"github.com/jawee/twitch-recorder/internal/processor"
 	"github.com/jawee/twitch-recorder/internal/recorder"
+	"github.com/jawee/twitch-recorder/internal/recordingtracker"
 	"github.com/jawee/twitch-recorder/internal/twitchclient"
 )
 
@@ -42,13 +43,14 @@ func main() {
     baseDirectory := "/inprogress"
     disc := discordclient.New(discordId, discordToken)
     rec := recorder.New(baseDirectory, disc)
+    rt := recordingtracker.New()
     c := make(chan *recorder.RecordedFile)
 
     postproc := postprocessor.New(disc)
 
     go startPostProcessing(postproc, c)
 
-    proc := processor.New(c, twitchClient, rec)
+    proc := processor.New(c, twitchClient, rec, rt)
 
     for {
 

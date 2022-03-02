@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/jawee/twitch-recorder/internal/recorder"
+	"github.com/jawee/twitch-recorder/internal/recordingtracker"
 	"github.com/jawee/twitch-recorder/internal/twitchclient"
 )
 
@@ -19,13 +20,15 @@ type StreamProcessor struct {
     c chan *recorder.RecordedFile
     client twitch_client.InformationClient
     rec recorder.Recorder
+    rt *recordingtracker.RecordingTracker
 }
 
-func New(c chan *recorder.RecordedFile, client twitch_client.InformationClient, rec recorder.Recorder) *StreamProcessor {
+func New(c chan *recorder.RecordedFile, client twitch_client.InformationClient, rec recorder.Recorder, rt *recordingtracker.RecordingTracker) *StreamProcessor {
     return &StreamProcessor{
         c: c,
         client: client,
         rec: rec,
+        rt: rt,
     }
 }
 
@@ -62,12 +65,19 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
 
             log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
             go func() {
+
+                isRecording := sp.rt.IsAlreadyRecording(username)
+                if isRecording {
+                    return
+                }
+                sp.rt.AddRecording(user.DisplayName)
                 res, err := sp.rec.Record(user.DisplayName, filename)
                 if err != nil {
                     log.Println(err)
                 } else {
                     sp.c <- res
                 }
+                sp.rt.RemoveRecording(username)
                 // Do I want a channel for each download, or just one?
                 //close(sp.c)
             }()
