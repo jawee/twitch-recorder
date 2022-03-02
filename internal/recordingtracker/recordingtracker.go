@@ -17,16 +17,17 @@ func New() *RecordingTracker {
 }
 
 func (rt *RecordingTracker) IsAlreadyRecording(username string) bool {
-    log.Println("Checking if " + username + " is already recording")
     rt.mu.Lock()
     defer rt.mu.Unlock()
 
     for _, recording := range rt.recordings {
         if recording == username {
+            log.Println(username + " is already recording")
             return true
         }
     }
 
+    log.Println(username + " is not recording")
     return false
 }
 

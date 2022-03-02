@@ -150,6 +150,10 @@ func TestProcessStreamerOnline(t *testing.T) {
     if res == nil {
         t.Errorf("ProcessStreamer did not return a result")
     }
+
+    if rt.IsAlreadyRecording("somename") {
+        t.Errorf("ProcessStreamer did not remove the streamer from the recording tracker")
+    }
 }
 
 func TestProcessTwoOnlineStreamers(t *testing.T) {
@@ -181,6 +185,12 @@ func TestProcessTwoOnlineStreamers(t *testing.T) {
         t.Errorf("ProcessStreamer did not return a second result")
     }
 
+    if rt.IsAlreadyRecording("somename") {
+        t.Errorf("ProcessStreamer did not remove the streamer from the recording tracker")
+    }
+    if rt.IsAlreadyRecording("somename2") {
+        t.Errorf("ProcessStreamer did not remove the streamer from the recording tracker")
+    }
 }
 
 func TestProcessStreamerOffline(t *testing.T) {
@@ -197,4 +207,7 @@ func TestProcessStreamerOffline(t *testing.T) {
         t.Errorf("ProcessStreamer did not retur an error")
     }
 
+    if rt.IsAlreadyRecording("offlinestreamer") {
+        t.Errorf("ProcessStreamer did not remove the streamer from the recording tracker")
+    }
 }
