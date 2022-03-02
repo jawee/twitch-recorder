@@ -3,13 +3,6 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jawee_twitch-recorder&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jawee_twitch-recorder)
 # Work in progress. Barely configurable at all, and not very smart.
 
-
-## TODO
-- [ ] Move finished files from inprogress to videos
-- [ ] Convert videos to h265 with ffmpeg
-- [ ] Notifications (probably discord, success and failure)
-- [ ] Twitch client handle unauthorized to not renew token every time
-
 ## Usage
 Make a copy of config-example.json, named config.json and fill it with 
 client-id, client-secret and streamers. 
