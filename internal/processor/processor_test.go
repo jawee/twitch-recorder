@@ -2,10 +2,12 @@ package processor
 
 import (
 	"encoding/json"
+	"log"
 	"testing"
 	"time"
 
 	"github.com/jawee/twitch-recorder/internal/recorder"
+	"github.com/jawee/twitch-recorder/internal/recordingtracker"
 	"github.com/jawee/twitch-recorder/internal/twitchclient"
 )
 
@@ -132,10 +134,12 @@ func (mr *mockRecorder) Record(username string, filename string) (*recorder.Reco
 
 
 func TestProcessStreamerOnline(t *testing.T) {
+    log.Println("Testing processStreamerOnline")
     c := make(chan *recorder.RecordedFile)
     mockTwitchClient := new(MockTwitchClient)
     mockRecorder := new(mockRecorder)
-    processor := New(c, mockTwitchClient, mockRecorder)
+    rt := recordingtracker.New()
+    processor := New(c, mockTwitchClient, mockRecorder, rt)
     err := processor.ProcessStreamer("somename")
 
     if err != nil {
@@ -146,13 +150,19 @@ func TestProcessStreamerOnline(t *testing.T) {
     if res == nil {
         t.Errorf("ProcessStreamer did not return a result")
     }
+
+    if rt.IsAlreadyRecording("somename") {
+        t.Errorf("ProcessStreamer did not remove the streamer from the recording tracker")
+    }
 }
 
 func TestProcessTwoOnlineStreamers(t *testing.T) {
+    log.Println("TestProcessTwoOnlineStreamers")
     c := make(chan *recorder.RecordedFile)
     mockTwitchClient := new(MockTwitchClient)
     mockRecorder := new(mockRecorder)
-    processor := New(c, mockTwitchClient, mockRecorder)
+    rt := recordingtracker.New()
+    processor := New(c, mockTwitchClient, mockRecorder, rt)
     err := processor.ProcessStreamer("somename")
 
     if err != nil {
@@ -175,18 +185,29 @@ func TestProcessTwoOnlineStreamers(t *testing.T) {
         t.Errorf("ProcessStreamer did not return a second result")
     }
 
+    if rt.IsAlreadyRecording("somename") {
+        t.Errorf("ProcessStreamer did not remove the streamer from the recording tracker")
+    }
+    if rt.IsAlreadyRecording("somename2") {
+        t.Errorf("ProcessStreamer did not remove the streamer from the recording tracker")
+    }
 }
 
 func TestProcessStreamerOffline(t *testing.T) {
+    log.Println("TestProcessStreamerOffline")
 
     c := make(chan *recorder.RecordedFile)
     mockTwitchClient := new(MockTwitchClient)
     mockRecorder := new(mockRecorder)
-    processor := New(c, mockTwitchClient, mockRecorder)
+    rt := recordingtracker.New()
+    processor := New(c, mockTwitchClient, mockRecorder, rt)
     err := processor.ProcessStreamer("offlinestreamer")
 
     if err == nil {
         t.Errorf("ProcessStreamer did not retur an error")
     }
 
+    if rt.IsAlreadyRecording("offlinestreamer") {
+        t.Errorf("ProcessStreamer did not remove the streamer from the recording tracker")
+    }
 }
