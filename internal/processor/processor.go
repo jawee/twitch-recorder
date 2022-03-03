@@ -63,17 +63,16 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
             filename := fmt.Sprintf("%s_%s.mp4", streams.Data[0].StartedAt.Format("20060102_130405"), streams.Data[0].Title)
             filename = strings.Replace(filename, " ", "_", -1)
 
+            isRecording := sp.rt.IsAlreadyRecording(username)
+            if isRecording {
+                return nil
+            }
             log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
             go func() {
-
-                isRecording := sp.rt.IsAlreadyRecording(username)
-                if isRecording {
-                    return
-                }
                 sp.rt.AddRecording(user.DisplayName)
                 res, err := sp.rec.Record(user.DisplayName, filename)
                 if err != nil {
-                    log.Println(err)
+                    log.Println("Recording error ", err)
                 } else {
                     sp.c <- res
                 }
