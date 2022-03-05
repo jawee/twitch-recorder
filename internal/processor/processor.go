@@ -37,56 +37,49 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
 
     users, err := sp.client.GetUserInformation(username)
     if err != nil {
-        log.Println(err)
         return err
     }
 
     if users == nil || len(users.Users) == 0 {
-        log.Println("No users found for " + username)
-        log.Printf("users response: %v\n", users)
         return errors.New("No users found for " + username)
     }
 
-    log.Println("Got user information for " + username)
-
     for _, user := range users.Users {
-        log.Println("Getting stream information for " + user.Login)
         streams, err := sp.client.GetStreamInformation(user.ID)
 
         if err != nil {
-            log.Println(err)
             return err
         }
 
         if len(streams.Data) > 0 {
-            log.Printf("%s is live\n", user.DisplayName)
+            log.Printf("%s is live\n", username)
             filename := fmt.Sprintf("%s_%s.mp4", streams.Data[0].StartedAt.Format("20060102_130405"), streams.Data[0].Title)
             filename = strings.Replace(filename, " ", "_", -1)
 
             isRecording := sp.rt.IsAlreadyRecording(username)
             if isRecording {
-                return nil
+                return fmt.Errorf("%s is already recording", username)
             }
-            log.Printf("Recording %s to %s\n", streams.Data[0].Title, filename)
+            log.Printf("%s: Recording %s to %s\n", username, streams.Data[0].Title, filename)
             go func() {
-                sp.rt.AddRecording(user.DisplayName)
-                res, err := sp.rec.Record(user.DisplayName, filename)
+                sp.rt.AddRecording(username)
+                res, err := sp.rec.Record(username, filename)
+
                 if err != nil {
                     log.Println("Recording error ", err)
-                } else {
+                }
+
+                if res != nil {
                     sp.c <- res
                 }
+
                 sp.rt.RemoveRecording(username)
-                // Do I want a channel for each download, or just one?
-                //close(sp.c)
             }()
         } else {
-            log.Printf("%s is offline\n", user.DisplayName)
             return errors.New(user.DisplayName + " is offline")
         }
     }
     return nil
-
 }
 
 

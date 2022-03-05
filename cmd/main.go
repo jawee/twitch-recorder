@@ -55,7 +55,8 @@ func main() {
     for {
 
         for _, streamer := range configuration.Streamers {
-            proc.ProcessStreamer(streamer)
+            err := proc.ProcessStreamer(streamer)
+            log.Println(err)
         }
         time.Sleep(time.Minute)
     }

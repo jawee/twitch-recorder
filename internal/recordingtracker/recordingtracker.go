@@ -22,7 +22,6 @@ func (rt *RecordingTracker) IsAlreadyRecording(username string) bool {
 
     for _, recording := range rt.recordings {
         if recording == username {
-            log.Println(username + " is already recording")
             return true
         }
     }
@@ -33,7 +32,6 @@ func (rt *RecordingTracker) IsAlreadyRecording(username string) bool {
 
 
 func (rt *RecordingTracker) AddRecording(username string) {
-    log.Println("Adding recording for " + username)
     rt.mu.Lock()
     defer rt.mu.Unlock()
 
@@ -41,7 +39,6 @@ func (rt *RecordingTracker) AddRecording(username string) {
 }
 
 func (rt *RecordingTracker) RemoveRecording(username string) {
-    log.Println("Removing recording for " + username)
     rt.mu.Lock()
     defer rt.mu.Unlock()
 

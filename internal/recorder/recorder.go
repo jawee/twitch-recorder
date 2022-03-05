@@ -54,15 +54,9 @@ func (s* StreamlinkRecorder) Record(username string, filename string) (*Recorded
     cmd.Stdout = os.Stdout
     err = cmd.Run()
 
-    if err != nil {
-        log.Println(err)
-        return nil, err
-    }
-
-
     return &RecordedFile{
         Username: username,
         FileName: filename,
         Path: filePath,
-    }, nil  
+    }, err  
 }
