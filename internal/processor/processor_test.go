@@ -211,3 +211,29 @@ func TestProcessStreamerOffline(t *testing.T) {
         t.Errorf("ProcessStreamer did not remove the streamer from the recording tracker")
     }
 }
+
+func TestSanitizeFilename(t *testing.T) {
+    cases := []struct {
+        input string
+        expected string
+    }{
+        {
+            "abc.mp4",
+            "abc.mp4",
+        },
+        {
+            "20220307_375141_ !?#:|.mp4",
+            "20220307_375141_______.mp4",
+        },
+        {
+            " /:?&=,\"'\\*?!|<>#",
+            "_________________",
+        },
+    }
+    for _, c := range cases {
+        actual := sanitizeFilename(c.input)
+        if actual != c.expected {
+            t.Errorf("sanitizeFilename(%s) returned %s, expected %s", c.input, actual, c.expected)
+        }
+    }
+}

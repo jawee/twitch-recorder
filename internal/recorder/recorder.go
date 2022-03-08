@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"strings"
 
 	"github.com/jawee/twitch-recorder/internal/discordclient"
 )
@@ -37,9 +36,6 @@ func (s* StreamlinkRecorder) Record(username string, filename string) (*Recorded
     log.Println("Starting recording")
 
     filePath := path.Join(s.baseDirectory, username, filename)
-
-    filePath = strings.Replace(filePath, "/", "_", -1)
-    filePath = strings.Replace(filePath, "|", "_", -1)
 
     _, err := os.Stat(filePath)
     if err == nil {

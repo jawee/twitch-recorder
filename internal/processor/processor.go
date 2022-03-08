@@ -54,7 +54,7 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
         if len(streams.Data) > 0 {
             log.Printf("%s is live\n", username)
             filename := fmt.Sprintf("%s_%s.mp4", streams.Data[0].StartedAt.Format("20060102_130405"), streams.Data[0].Title)
-            filename = strings.Replace(filename, " ", "_", -1)
+            filename = sanitizeFilename(filename)
 
             isRecording := sp.rt.IsAlreadyRecording(username)
             if isRecording {
@@ -82,4 +82,10 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
     return nil
 }
 
-
+func sanitizeFilename(filename string) string {
+    unallowedCharacters := []string {" ", "/", ":", "?", "&", "=", ",", "\"", "'", "\\", "*", "?", "!", "|", "<", ">", "#"}
+    for _, chars := range unallowedCharacters {
+        filename = strings.Replace(filename, chars, "_", -1)
+    }
+    return filename
+}
