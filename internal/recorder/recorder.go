@@ -48,7 +48,7 @@ func (s* StreamlinkRecorder) Record(username string, filename string) (*Recorded
     if _, err := os.Stat(userFolderPath); os.IsNotExist(err) {
         os.Mkdir(userFolderPath, 0777)
     }
-    cmd := exec.Command("streamlink", "twitch.tv/" + username, "best", "-o", filePath)
+    cmd := exec.Command("streamlink", "--twitch-disable-ads", "twitch.tv/" + username, "best", "-o", filePath)
 
     log.Println("Running cmd")
     cmd.Stdout = os.Stdout
