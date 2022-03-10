@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"regexp"
 	"strings"
 
 	"github.com/jawee/twitch-recorder/internal/recorder"
@@ -87,5 +88,11 @@ func sanitizeFilename(filename string) string {
     for _, chars := range unallowedCharacters {
         filename = strings.Replace(filename, chars, "_", -1)
     }
+
+    re := regexp.MustCompile(`[_]{2,}`)
+    filename = re.ReplaceAllStringFunc(filename, func (s string) string {
+        return "_"
+    })
+
     return filename
 }
