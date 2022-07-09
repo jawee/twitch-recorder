@@ -2,7 +2,7 @@ FROM golang:1.18
 
 WORKDIR /usr/src/app
 
-RUN echo "deb http://deb.debian.org/debian bullseye-backports main" | sudo tee "/etc/apt/sources.list.d/streamlink.list"
+RUN echo "deb http://deb.debian.org/debian bullseye-backports main" | tee "/etc/apt/sources.list.d/streamlink.list"
 
 RUN apt update
 RUN apt -t buster-backports install streamlink -y
