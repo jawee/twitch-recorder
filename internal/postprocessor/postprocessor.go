@@ -1,10 +1,13 @@
 package postprocessor
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"path"
+	"regexp"
 
 	"github.com/jawee/twitch-recorder/internal/discordclient"
 	"github.com/jawee/twitch-recorder/internal/recorder"
@@ -37,6 +40,10 @@ func (fm *FileMovePostProcessor) Process(rf *recorder.RecordedFile) error {
 
     filePath := path.Join(userFolderPath, rf.FileName)
 
+    for fileExists(filePath) {
+        filePath = getNewFilePath(userFolderPath, rf.FileName)
+    }
+
     err := moveFile(rf.Path, filePath)
 
     if err != nil {
@@ -47,6 +54,22 @@ func (fm *FileMovePostProcessor) Process(rf *recorder.RecordedFile) error {
     fm.discordClient.SendMessage(rf.FileName + " moved to processed folder")
     
     return nil
+}
+
+func getNewFilePath(userFolderPath, fileName string) string {
+    re := regexp.MustCompile("^[0-9]*_[0-9]*")
+    res := re.FindString(fileName)
+
+    fileName = re.ReplaceAllString(fileName, fmt.Sprintf("%s1", res))
+
+    log.Printf("%v", len(res))
+    return userFolderPath+fileName
+     // return ""
+}
+
+func fileExists(path string) bool {
+    _, error := os.Stat(path)
+    return !errors.Is(error, os.ErrNotExist)
 }
 
 /*
