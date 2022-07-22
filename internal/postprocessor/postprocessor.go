@@ -62,9 +62,7 @@ func getNewFilePath(userFolderPath, fileName string) string {
 
     fileName = re.ReplaceAllString(fileName, fmt.Sprintf("%s1", res))
 
-    log.Printf("%v", len(res))
-    return userFolderPath+fileName
-     // return ""
+    return path.Join(userFolderPath, fileName)
 }
 
 func fileExists(path string) bool {
