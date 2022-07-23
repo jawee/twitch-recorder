@@ -31,6 +31,7 @@ func New(discordClient *discordclient.DiscordClient) *FileMovePostProcessor {
 func (fm *FileMovePostProcessor) Process(rf *recorder.RecordedFile) error {
     fm.discordClient.SendMessage("Postprocessing file: " + rf.FileName)
 
+    //TODO: Make configureable
     baseDirectory := "/videos"
 
     userFolderPath := path.Join(baseDirectory, rf.Username)
