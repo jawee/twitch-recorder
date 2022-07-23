@@ -23,6 +23,7 @@ func main() {
         MaxBackups: 0,
         MaxAge:     0, //days
     })
+
     configProvider := new(configuration.FileConfigurationProvider)
     configuration, err := configuration.New(configProvider)
 
@@ -30,16 +31,19 @@ func main() {
         log.Println(err)
         os.Exit(1)
     }
+
     if configuration == nil {
         log.Println("Configuration is nil")
         os.Exit(1)
     }
+
     clientId := configuration.ClientId
     clientSecret := configuration.ClientSecret
     discordToken := configuration.WebhookToken
     discordId := configuration.WebhookId
 
     twitchClient := twitch_client.New(clientId, clientSecret)
+    //TODO: Make configureable
     baseDirectory := "/inprogress"
     disc := discordclient.New(discordId, discordToken)
     rec := recorder.New(baseDirectory, disc)
