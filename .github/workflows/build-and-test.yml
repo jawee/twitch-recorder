@@ -17,7 +17,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          check-latest: true
+          go-version: 'stable'
 
       - name: Build
         run: go build cmd/main.go 
@@ -33,7 +33,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          check-latest: true
+          go-version: 'stable'
 
       - name: Run Unit tests.
         run: go test ./...
