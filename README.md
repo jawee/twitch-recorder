@@ -1,6 +1,5 @@
 # twitch-recorder
 ![example workflow](https://github.com/jawee/twitch-recorder/actions/workflows/build-and-test.yml/badge.svg)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jawee_twitch-recorder&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=jawee_twitch-recorder)
 # Work in progress. Barely configurable at all, and not very smart.
 
 ## Usage
