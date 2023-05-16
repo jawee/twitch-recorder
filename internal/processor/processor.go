@@ -54,7 +54,7 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
 
         if len(streams.Data) > 0 {
             log.Printf("%s is live\n", username)
-            filename := fmt.Sprintf("%s_%s.mp4", streams.Data[0].StartedAt.Format("20060102_130405"), streams.Data[0].Title)
+            filename := fmt.Sprintf("%s.mp4", streams.Data[0].StartedAt.Format("20060102_130405"))
             filename = sanitizeFilename(filename)
 
             isRecording := sp.rt.IsAlreadyRecording(username)
