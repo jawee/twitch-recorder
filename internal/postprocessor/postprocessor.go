@@ -29,7 +29,7 @@ func New(discordClient *discordclient.DiscordClient) *FileMovePostProcessor {
 
 
 func (fm *FileMovePostProcessor) Process(rf *recorder.RecordedFile) error {
-    fm.discordClient.SendMessage("Postprocessing file: " + rf.FileName)
+    fm.discordClient.SendMessage("Postprocessing file: " + rf.FileName + " for " + rf.Username)
 
     //TODO: Make configureable
     baseDirectory := "/videos"
@@ -52,7 +52,7 @@ func (fm *FileMovePostProcessor) Process(rf *recorder.RecordedFile) error {
         return err
     }
 
-    fm.discordClient.SendMessage(rf.FileName + " moved to processed folder")
+    fm.discordClient.SendMessage(rf.FileName + " moved to processed folder for " + rf.Username)
     
     return nil
 }
