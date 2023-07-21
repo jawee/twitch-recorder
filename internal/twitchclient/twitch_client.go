@@ -56,7 +56,7 @@ func (c *TwitchClient) GetUserInformation(userName string) (*SearchUsers, error)
 
     var searchUsers SearchUsers
 
-    log.Printf("Making authroized request\n")
+    log.Printf("Making authorized request\n")
     err := c.makeAuthorizedRequest(url, &searchUsers, false)
     if err != nil {
         return nil, err
