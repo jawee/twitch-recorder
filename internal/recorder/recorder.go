@@ -1,7 +1,7 @@
 package recorder
 
 import (
-	"errors"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -35,11 +35,12 @@ func New(baseDirectory string, notificationClient discordclient.NotificationClie
 func (s* StreamlinkRecorder) Record(username string, filename string) (*RecordedFile, error) {
     log.Println("Starting recording")
 
-    filePath := path.Join(s.baseDirectory, username, filename)
+    filePath := path.Join(s.baseDirectory, username, filename, ".mp4")
 
     _, err := os.Stat(filePath)
     if err == nil {
-        return nil, errors.New("File already exists")
+        // call self with filename + "1"
+        return s.Record(username, fmt.Sprintf("%s1", filename))
     }
 
     s.notificationClient.SendMessage("Starting recording for " + username + ". File " + filename)

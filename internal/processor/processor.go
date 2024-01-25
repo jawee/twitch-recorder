@@ -9,7 +9,7 @@ import (
 
 	"github.com/jawee/twitch-recorder/internal/recorder"
 	"github.com/jawee/twitch-recorder/internal/recordingtracker"
-	"github.com/jawee/twitch-recorder/internal/twitchclient"
+	twitch_client "github.com/jawee/twitch-recorder/internal/twitchclient"
 )
 
 type Processor interface {
@@ -54,14 +54,14 @@ func (sp *StreamProcessor) ProcessStreamer(username string) error {
 
         if len(streams.Data) > 0 {
             log.Printf("%s is live\n", username)
-            filename := fmt.Sprintf("%s.mp4", streams.Data[0].StartedAt.Format("20060102_130405"))
+            filename := fmt.Sprintf("%s", streams.Data[0].StartedAt.Format("20060102_130405"))
             filename = sanitizeFilename(filename)
 
             isRecording := sp.rt.IsAlreadyRecording(username)
             if isRecording {
                 return fmt.Errorf("%s is already recording", username)
             }
-            log.Printf("%s: Recording %s to %s\n", username, streams.Data[0].Title, filename)
+            log.Printf("%s: Recording %s to %s.mp4\n", username, streams.Data[0].Title, filename)
             go func() {
                 sp.rt.AddRecording(username)
                 res, err := sp.rec.Record(username, filename)
