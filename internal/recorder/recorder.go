@@ -35,7 +35,7 @@ func New(baseDirectory string, notificationClient discordclient.NotificationClie
 func (s* StreamlinkRecorder) Record(username string, filename string) (*RecordedFile, error) {
     log.Println("Starting recording")
 
-    filePath := path.Join(s.baseDirectory, username, filename, ".mp4")
+    filePath := path.Join(s.baseDirectory, username, fmt.Sprintf("%s.mp4", filename))
 
     _, err := os.Stat(filePath)
     if err == nil {
