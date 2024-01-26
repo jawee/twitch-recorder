@@ -39,7 +39,7 @@ func (fm *FileMovePostProcessor) Process(rf *recorder.RecordedFile) error {
         os.Mkdir(userFolderPath, 0777)
     }
 
-    filePath := path.Join(userFolderPath, rf.FileName)
+    filePath := path.Join(userFolderPath, fmt.Sprintf("%s.mp4", rf.FileName))
 
     for fileExists(filePath) {
         filePath = getNewFilePath(userFolderPath, rf.FileName)
@@ -63,7 +63,7 @@ func getNewFilePath(userFolderPath, fileName string) string {
 
     fileName = re.ReplaceAllString(fileName, fmt.Sprintf("%s1", res))
 
-    return path.Join(userFolderPath, fileName)
+    return path.Join(userFolderPath, fmt.Sprintf("%s.mp4", fileName))
 }
 
 func fileExists(path string) bool {
