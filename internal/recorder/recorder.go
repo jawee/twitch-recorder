@@ -43,7 +43,7 @@ func (s* StreamlinkRecorder) Record(username string, filename string) (*Recorded
         return s.Record(username, fmt.Sprintf("%s1", filename))
     }
 
-    s.notificationClient.SendMessage("Starting recording for " + username + ". File " + filename)
+    s.notificationClient.SendMessage("Starting recording for " + username + ". File " + fmt.Sprintf("%s.mp4", filename))
 
     userFolderPath := path.Join(s.baseDirectory, username)
     if _, err := os.Stat(userFolderPath); os.IsNotExist(err) {
