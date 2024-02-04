@@ -17,6 +17,7 @@ import (
 )
 
 func main() {
+    log.Println("twitch-recorder starting")
     log.SetOutput(&lumberjack.Logger{
         Filename:   "/logs/twitch-recorder.log",
         MaxSize:    1, // megabytes
