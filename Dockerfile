@@ -15,7 +15,7 @@ FROM build AS run-test-stage
 RUN go test -v ./...
 
 
-FROM debian:12-slim AS release-stage
+FROM debian:stable-slim AS release-stage
 
 WORKDIR /
 
