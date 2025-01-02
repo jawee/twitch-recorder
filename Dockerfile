@@ -21,10 +21,10 @@ WORKDIR /
 
 COPY --from=build /usr/local/bin/twitch-recorder /usr/local/bin/twitch-recorder
 
-RUN echo "deb http://deb.debian.org/debian bullseye-backports main" | tee "/etc/apt/sources.list.d/streamlink.list"
+RUN echo "deb http://deb.debian.org/debian bookworm-backports main" | sudo tee "/etc/apt/sources.list.d/streamlink.list"
 
-RUN apt update
-RUN apt -t bullseye-backports install streamlink -y
+RUN sudo apt update
+RUN sudo apt -t bookworm-backports install streamlink
 
 # RUN apt install ffmpeg -y
 
