@@ -1,0 +1,19 @@
+name: Publish image
+
+on:  
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build-and-publish-image:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build the twitch-recorder Docker image
+      run: |
+        docker build .
