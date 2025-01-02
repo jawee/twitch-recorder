@@ -21,7 +21,7 @@ WORKDIR /
 
 COPY --from=build /usr/local/bin/twitch-recorder /usr/local/bin/twitch-recorder
 
-RUN echo "deb http://deb.debian.org/debian bookworm-backports main" | sudo tee "/etc/apt/sources.list.d/streamlink.list"
+RUN echo "deb http://deb.debian.org/debian bookworm-backports main" | tee "/etc/apt/sources.list.d/streamlink.list"
 
 RUN sudo apt update
 RUN sudo apt -t bookworm-backports install streamlink
