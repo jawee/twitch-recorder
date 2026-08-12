@@ -11,53 +11,61 @@ import (
 )
 
 type RecordedFile struct {
-    Username string
-    FileName string
-    Path string
+	Username string
+	FileName string
+	Path     string
 }
 
 type Recorder interface {
-    Record(username string, filename string) (*RecordedFile, error)
+	Record(username string, filename string) (*RecordedFile, error)
 }
 
 type StreamlinkRecorder struct {
-    baseDirectory string
-    notificationClient discordclient.NotificationClient
+	baseDirectory      string
+	notificationClient discordclient.NotificationClient
 }
 
 func New(baseDirectory string, notificationClient discordclient.NotificationClient) *StreamlinkRecorder {
-    return &StreamlinkRecorder{
-        baseDirectory: baseDirectory,
-        notificationClient: notificationClient,
-    }
+	return &StreamlinkRecorder{
+		baseDirectory:      baseDirectory,
+		notificationClient: notificationClient,
+	}
 }
 
-func (s* StreamlinkRecorder) Record(username string, filename string) (*RecordedFile, error) {
-    log.Println("Starting recording")
+func (s *StreamlinkRecorder) Record(username string, filename string) (*RecordedFile, error) {
+	log.Println("Starting recording")
 
-    filePath := path.Join(s.baseDirectory, username, fmt.Sprintf("%s.mp4", filename))
+	filePath := path.Join(s.baseDirectory, username, fmt.Sprintf("%s.mp4", filename))
 
-    _, err := os.Stat(filePath)
-    if err == nil {
-        // call self with filename + "1"
-        return s.Record(username, fmt.Sprintf("%s1", filename))
-    }
+	_, err := os.Stat(filePath)
+	if err == nil {
+		// call self with filename + "1"
+		return s.Record(username, fmt.Sprintf("%s1", filename))
+	}
 
-    s.notificationClient.SendMessage("Starting recording for " + username + ". File " + fmt.Sprintf("%s.mp4", filename))
+	s.notificationClient.SendMessage("Starting recording for " + username + ". File " + fmt.Sprintf("%s.mp4", filename))
 
-    userFolderPath := path.Join(s.baseDirectory, username)
-    if _, err := os.Stat(userFolderPath); os.IsNotExist(err) {
-        os.Mkdir(userFolderPath, 0777)
-    }
-    cmd := exec.Command("streamlink", "twitch.tv/" + username, "best", "-o", filePath)
+	userFolderPath := path.Join(s.baseDirectory, username)
+	if _, err := os.Stat(userFolderPath); os.IsNotExist(err) {
+		os.Mkdir(userFolderPath, 0777)
+	}
+	cmd := exec.Command(
+		"streamlink",
+		"--webbrowser", "yes",
+		"--webbrowser-headless", "yes",
+		"--webbrowser-executable", "/usr/local/bin/chromium-launcher",
+		"twitch.tv/"+username,
+		"best",
+		"-o", filePath,
+	)
 
-    log.Println("Running cmd")
-    cmd.Stdout = os.Stdout
-    err = cmd.Run()
+	log.Println("Running cmd")
+	cmd.Stdout = os.Stdout
+	err = cmd.Run()
 
-    return &RecordedFile{
-        Username: username,
-        FileName: filename,
-        Path: filePath,
-    }, err  
+	return &RecordedFile{
+		Username: username,
+		FileName: filename,
+		Path:     filePath,
+	}, err
 }

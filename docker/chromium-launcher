@@ -1,0 +1,24 @@
+#!/bin/sh
+set -eu
+
+# Streamlink creates Chromium's temporary profile as the recorder user (root).
+# Give only that isolated directory to the unprivileged browser process.
+for argument in "$@"; do
+    case "$argument" in
+        --user-data-dir=*)
+            profile_directory=${argument#--user-data-dir=}
+            chown -R streamlink-browser:streamlink-browser "$profile_directory"
+            ;;
+    esac
+done
+
+export HOME=/var/lib/streamlink-browser
+
+exec setpriv \
+    --reuid=streamlink-browser \
+    --regid=streamlink-browser \
+    --init-groups \
+    /usr/bin/chromium \
+    --disable-dev-shm-usage \
+    --no-sandbox \
+    "$@"

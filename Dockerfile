@@ -15,16 +15,23 @@ FROM build AS run-test-stage
 RUN go test -v ./...
 
 
-FROM debian:stable-slim AS release-stage
+FROM debian:trixie-slim AS release-stage
 
 WORKDIR /
 
 COPY --from=build /usr/local/bin/twitch-recorder /usr/local/bin/twitch-recorder
+COPY docker/chromium-launcher /usr/local/bin/chromium-launcher
 
-RUN echo "deb http://deb.debian.org/debian bookworm-backports main" | tee "/etc/apt/sources.list.d/streamlink.list"
-
-RUN apt update
-RUN apt -t bookworm-backports install streamlink -y
+RUN echo "deb http://deb.debian.org/debian trixie-backports main" > /etc/apt/sources.list.d/streamlink.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        -t trixie-backports \
+        streamlink \
+    && apt-get install -y --no-install-recommends \
+        chromium \
+    && useradd --system --create-home --home-dir /var/lib/streamlink-browser streamlink-browser \
+    && chmod 0755 /usr/local/bin/chromium-launcher \
+    && rm -rf /var/lib/apt/lists/*
 
 # RUN apt install ffmpeg -y
 
